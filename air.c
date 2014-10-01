@@ -34,7 +34,6 @@ void send_command (int uart_fd, unsigned char* buff, unsigned short addr, unsign
 	unsigned char crc1, crc2;
 	int ret;
 	
-	//ssize_t write(int fd, const void *buf, size_t count);
 	buff[0] = 0x01;
 	buff[1] = 0x03;
 	buff[2] = (unsigned char)((0xff00 & addr) >> 8);
@@ -74,9 +73,6 @@ void get_data (int uart_fd, unsigned char* data_buffer, unsigned short len)
 	read(uart_fd, &data_buffer[1], 1);
 	read(uart_fd, &data_buffer[2], 1);
 
-//	printf("data_buffer[0] %d\n", data_buffer[0]);
-//	printf("data_buffer[0] %d\n", data_buffer[1]);
-//	printf("data_buffer[0] %d\n", data_buffer[2]);
 	get_len = data_buffer[2];
 	if (get_len != len) {
 		printf("Error !!!, get_len %d, len %d\n", get_len, len);
@@ -425,18 +421,10 @@ void set_dei_group_on (int uart_fd)
 void set_command (int uart_fd, unsigned char buff1[])
 {
 	unsigned char crc1, crc2;
-	//unsigned char buff1[10];
 	unsigned char buff2[10];
 	int ret, ii;
 	int	get_len;
 	
-	//buff1[0] = 0x01;
-	//buff1[1] = 0x06;
-	//buff1[2] = 0x00;
-	//buff1[3] = 0x07; 
-	//buff1[4] = 0x00;
-	//buff1[5] = 0x01;
-
 	crc_chk (buff1, &crc1, &crc2, 6); 
 
 	buff1[6] = crc1;		//0x85
@@ -492,20 +480,12 @@ void set_command (int uart_fd, unsigned char buff1[])
 void get_command (int uart_fd, unsigned char buff1[])
 {
 	unsigned char crc1, crc2;
-	//unsigned char buff1[10];
 	unsigned char buff2[100];
         char tmp[20];
         char url[]="curl -X GET http://61.222.127.184:8080/brezel/type1/sensor/air_condition/0";
 	int ret, ii;
 	int	get_len;
 	
-	//buff1[0] = 0x01;
-	//buff1[1] = 0x03;
-	//buff1[2] = 0x00;
-	//buff1[3] = 0x07; 
-	//buff1[4] = 0x00;
-	//buff1[5] = 0x01;
-
 	crc_chk (buff1, &crc1, &crc2, 6); 
 
 	buff1[6] = crc1;		//0x85
@@ -552,12 +532,8 @@ void get_command (int uart_fd, unsigned char buff1[])
 #if DEBUG == 1
 	printf("] \n");
 #endif
-      //  sprintf(tmp,"/%d/%.1f/%d/%d",(int)buff2[4],((float)buff2[6])/2,(int)buff2[8],(int)buff2[10]);
         sprintf(tmp,"%d,%.1f,%d,%d",(int)buff2[4],((float)buff2[6])/2,(int)buff2[8],(int)buff2[10]);
-
-      //  strcat(url,tmp);
         printf("%s\n",tmp);
-     //	system(url);
 }
 
 
@@ -593,74 +569,25 @@ int main(int argc,char *argv[])
 
 	tcsetattr(tty_fd,TCSANOW,&tio);
 
-	//send_dei_test (tty_fd);
-	
-	//sleep(1);
-      /*  if(strcmp(argv[1],"on")==0)
-        {
-        	set_dei_group_on (tty_fd);
-             	//set_command (tty_fd, group_on);
-        }
-
-        if(strcmp(argv[1],"off")==0)
-        {
-        	set_dei_group_off (tty_fd);
-                //set_command (tty_fd, group_off);
-        }
-
-        if(strcmp(argv[1],"temp")==0)
-        {
-        	//set_dei_group_off (tty_fd);
-                set_command (tty_fd, group_temp);
-        }
-       
-        if(strcmp(argv[1],"mode")==0)
-        {
-        	//set_dei_group_on (tty_fd);
-             	set_command (tty_fd, group_mode);
-        }
-
-        if(strcmp(argv[1],"fan")==0)
-        {
-        	//set_dei_group_off (tty_fd);
-                set_command (tty_fd, group_fan);
-        }
-
-        if(strcmp(argv[1],"lock")==0)
-        {
-        	//set_dei_group_off (tty_fd);
-                set_command (tty_fd, group_lock);
-        }*/
-
         if(strcmp(argv[1],"set")==0)
         {
                 command[0]=0x01;
-         	    command[1]=0x06;
+         	command[1]=0x06;
                 command[2]=(unsigned char)atoi(argv[2]);
                 command[4]=0x00;
 
                 if(strcmp(argv[3],"power")==0)
                 {	
-                 	if(strcmp(argv[2],"0")==0)
-       			    {
+                	if(strcmp(argv[2],"0")==0)
+       			{
                 		command[3]=0x07;
-                    }
-                    else
-                    {
-                        command[3]=0x10;
-			        }
-
-                        command[5]=(unsigned char)atoi(argv[4]);
-
-                       /* if(strcmp(argv[4],"on")==0)
-                	{
-                		command[5]=0x01;
+                    	}
+                    	else
+                    	{
+                        	command[3]=0x10;
 			}
 
-                        if(strcmp(argv[3],"off")==0)
-                        {
-                		command[5]=0x00;
-			}*/
+                        command[5]=(unsigned char)atoi(argv[4]);
 		}
 
                 if(strcmp(argv[3],"temp")==0)
@@ -727,37 +654,15 @@ int main(int argc,char *argv[])
                 command[0]=0x01;
          	command[1]=0x03;
                 command[2]=(unsigned char)atoi(argv[2]); 
-               // command[3]=0x07;
                 command[4]=0x00;
-               // command[5]=0x05;
+
                 if(strcmp(argv[2],"0")==0)
                 {
 			command[3]=0x07;
                         command[5]=0x05;
                 }
 
-                
-
-
-               /* if(strcmp(argv[3],"power")==0)
-                {
-                	command[3]=0x10; 
-		}
-                
-                if(strcmp(argv[3],"mode")==0)
-                {
-                	command[3]=0x09;
-	                command[5]=(unsigned char)atoi(argv[4]);
-		}
-
-                if(strcmp(argv[3],"fan")==0)
-                {
-                	command[3]=0x0A;
-			command[5]=(unsigned char)atoi(argv[4]);
-		}*/
-
                 get_command (tty_fd, command);
-
         }
 
         if(strcmp(argv[1],"cset")==0)
@@ -770,16 +675,6 @@ int main(int argc,char *argv[])
     		command[5]=(unsigned char)atoi(argv[7]); 
 		set_command (tty_fd, command);
  	}
-
-	//set_dei_group_on (tty_fd);
-	//sleep(1);
-	//get_dei_group_status(tty_fd);
-	//sleep(1);
-	//set_dei_group_off (tty_fd);
-	//sleep(1);
-	//get_dei_group_status(tty_fd);
-	//sleep(1);
-
 
 	close(tty_fd);
 
